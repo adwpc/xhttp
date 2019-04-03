@@ -2,6 +2,9 @@
 
 XHttp is a http client written by golang
 
+[![GoDoc](https://godoc.org/github.com/adwpc/xhttp?status.svg)](https://godoc.org/github.com/adwpc/xhttp)
+[![Build Status](https://travis-ci.org/adwpc/xhttp.svg?branch=master)](https://travis-ci.org/adwpc/xhttp)
+
 Feature:
 
 * easy to use
