@@ -5,19 +5,14 @@ XHttp is a http client written by golang
 [![GoDoc](https://godoc.org/github.com/adwpc/xhttp?status.svg)](https://godoc.org/github.com/adwpc/xhttp)
 [![Build Status](https://travis-ci.org/adwpc/xhttp.svg?branch=master)](https://travis-ci.org/adwpc/xhttp)
 
-Feature:
-
-* easy to use
-
-* set your request header/param/body
-
-* get json/string/json's key from response
-
-* chain expression
-
-* custom timeout
-
-* no "defer resp.Body.Close()"
+feature|特性
+---|---
+easy to use|使用简单
+chain expression|链式表达式
+set your request method/header/param/body|支持请求方法/头/参数/体
+get json/string/json's key from response|支持获取json/string/json字段
+custom timeout|支持自定义超时
+no "defer resp.Body.Close()"|免"defer resp.Body.Close()"
 
 # Usage
 
