@@ -115,6 +115,14 @@ func (c *XHttp) SetBody(b string) *XHttp {
 	return c
 }
 
+// set the http body by interface
+// make sure marshal ok
+func (c *XHttp) SetJsonBody(b interface{}) *XHttp {
+	body, _ := json.Marshal(b)
+	c.body = string(body)
+	return c
+}
+
 // new with default timeout
 func New() *XHttp {
 	return NewWithTimeout(defaultConnTimeout, defaultRespTimeout, defaultTotalTimeout)
@@ -229,4 +237,24 @@ func (c *XHttp) RespToJson(url string, j interface{}) error {
 	defer body.Close()
 
 	return err
+}
+
+// get all data from http request
+func (c *XHttp) RespToJsonByKeys(url string, j interface{}, keys ...string) (int64, error) {
+	body, cost, err := c.getRespBody(url)
+	if err != nil {
+		return cost, err
+	}
+	defer body.Close()
+	data, err := ioutil.ReadAll(body)
+	if err != nil {
+		return cost, err
+	}
+
+	v, _, _, err := jsonparser.Get(data, keys...)
+	if err != nil {
+		return cost, err
+	}
+	err = json.Unmarshal(v, j)
+	return cost, err
 }
