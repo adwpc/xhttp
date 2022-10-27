@@ -240,21 +240,21 @@ func (c *XHttp) RespToJson(url string, j interface{}) error {
 }
 
 // get all data from http request
-func (c *XHttp) RespToJsonByKeys(url string, j interface{}, keys ...string) (int64, error) {
-	body, cost, err := c.getRespBody(url)
+func (c *XHttp) RespToJsonByKeys(url string, j interface{}, keys ...string) error {
+	body, err := c.getRespBody(url)
 	if err != nil {
-		return cost, err
+		return err
 	}
 	defer body.Close()
 	data, err := ioutil.ReadAll(body)
 	if err != nil {
-		return cost, err
+		return err
 	}
 
 	v, _, _, err := jsonparser.Get(data, keys...)
 	if err != nil {
-		return cost, err
+		return err
 	}
 	err = json.Unmarshal(v, j)
-	return cost, err
+	return err
 }
