@@ -212,9 +212,10 @@ func (c *XHttp) getRespBody(url string) (body io.ReadCloser, err error) {
 		req.URL.RawQuery = q.Encode()
 	}
 
+	// req.Header.Add will automatically capitalize the input characters.
 	if c.headers != nil {
-		for key, val := range c.headers {
-			req.Header.Add(key, val)
+		for k, v := range c.headers {
+			header[k] = []string{v}
 		}
 		c.headers = nil
 	}
@@ -222,6 +223,11 @@ func (c *XHttp) getRespBody(url string) (body io.ReadCloser, err error) {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK &&
+		resp.StatusCode != http.StatusPartialContent {
+		return nil, errors.New(resp.Status)
 	}
 
 	return resp.Body, nil
