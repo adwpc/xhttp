@@ -214,6 +214,7 @@ func (c *XHttp) getRespBody(url string) (body io.ReadCloser, err error) {
 
 	// req.Header.Add will automatically capitalize the input characters.
 	if c.headers != nil {
+		header := req.Header
 		for k, v := range c.headers {
 			header[k] = []string{v}
 		}
