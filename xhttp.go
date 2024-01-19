@@ -185,7 +185,7 @@ func NewWithOption(connectTimeout, responseHeaderTimeout, totalTimeout int64, pr
 
 // get all data from http request
 func (c *XHttp) RespToString(url string) (string, error) {
-	body, err := c.getRespBody(url)
+	body, err := c.GetRestBody(url)
 	if err != nil {
 		return "", err
 	}
@@ -200,7 +200,7 @@ func (c *XHttp) RespToString(url string) (string, error) {
 
 // get a json's value from http request
 func (c *XHttp) RespGetJsonKey(url string, keys ...string) ([]byte, error) {
-	body, err := c.getRespBody(url)
+	body, err := c.GetRestBody(url)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -218,7 +218,7 @@ func (c *XHttp) RespGetJsonKey(url string, keys ...string) ([]byte, error) {
 
 // get a http response body
 // warning: you must close body at last
-func (c *XHttp) getRespBody(url string) (body io.ReadCloser, err error) {
+func (c *XHttp) GetRestBody(url string) (body io.ReadCloser, err error) {
 	if len(url) <= minHttpUrlLen || url[0:4] != "http" {
 		return nil, errMsg[ErrorInvalidUrl]
 	}
@@ -265,7 +265,7 @@ func (c *XHttp) getRespBody(url string) (body io.ReadCloser, err error) {
 
 // get all data from http request
 func (c *XHttp) RespToJson(url string, j interface{}) error {
-	body, err := c.getRespBody(url)
+	body, err := c.GetRestBody(url)
 	if err != nil {
 		return err
 	}
@@ -277,7 +277,7 @@ func (c *XHttp) RespToJson(url string, j interface{}) error {
 
 // get all data from http request
 func (c *XHttp) RespToJsonByKeys(url string, j interface{}, keys ...string) error {
-	body, err := c.getRespBody(url)
+	body, err := c.GetRestBody(url)
 	if err != nil {
 		return err
 	}
