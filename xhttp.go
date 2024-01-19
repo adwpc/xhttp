@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -44,11 +45,14 @@ var allowMethods = map[string]bool{
 }
 
 type XHttp struct {
-	body    string
-	method  string
-	client  *http.Client
-	params  map[string]string
-	headers map[string]string
+	body                  string
+	method                string
+	client                *http.Client
+	params                map[string]string
+	headers               map[string]string
+	connectTimeout        int64
+	responseHeaderTimeout int64
+	totalTimeout          int64
 }
 
 // set the http method
@@ -123,16 +127,17 @@ func (c *XHttp) SetJsonBody(b interface{}) *XHttp {
 	return c
 }
 
-// new with default timeout
+// New with default options
 func New() *XHttp {
-	return NewWithTimeout(defaultConnTimeout, defaultRespTimeout, defaultTotalTimeout)
+	return NewWithOption(defaultConnTimeout, defaultRespTimeout, defaultTotalTimeout, "")
 }
 
-// new with timeout
-func NewWithTimeout(connectTime, responseHeaderTimeout, totalTimeout int64) *XHttp {
+// NewWithOption
+func NewWithOption(connectTimeout, responseHeaderTimeout, totalTimeout int64, proxy string) *XHttp {
+
 	dialTimeout := func(network, addr string) (net.Conn, error) {
 		dialer := &net.Dialer{
-			Timeout: time.Millisecond * time.Duration(connectTime),
+			Timeout: time.Millisecond * time.Duration(connectTimeout),
 		}
 		conn, err := dialer.Dial(network, addr)
 		if err != nil {
@@ -143,9 +148,33 @@ func NewWithTimeout(connectTime, responseHeaderTimeout, totalTimeout int64) *XHt
 		}
 		return conn, err
 	}
+
+	if proxy == "" {
+		return &XHttp{
+			connectTimeout:        connectTimeout,
+			responseHeaderTimeout: responseHeaderTimeout,
+			totalTimeout:          totalTimeout,
+			client: &http.Client{
+				Transport: &http.Transport{
+					Dial:                  dialTimeout,
+					ResponseHeaderTimeout: time.Millisecond * time.Duration(responseHeaderTimeout),
+				},
+				Timeout: time.Millisecond * time.Duration(totalTimeout),
+			},
+		}
+	}
+
+	proxyURL, err := url.Parse(proxy)
+	if err != nil {
+		panic(err)
+	}
 	return &XHttp{
+		connectTimeout:        connectTimeout,
+		responseHeaderTimeout: responseHeaderTimeout,
+		totalTimeout:          totalTimeout,
 		client: &http.Client{
 			Transport: &http.Transport{
+				Proxy:                 http.ProxyURL(proxyURL),
 				Dial:                  dialTimeout,
 				ResponseHeaderTimeout: time.Millisecond * time.Duration(responseHeaderTimeout),
 			},
