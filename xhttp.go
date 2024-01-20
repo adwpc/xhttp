@@ -156,6 +156,7 @@ func NewWithOption(connectTimeout, responseHeaderTimeout, totalTimeout int64, pr
 			totalTimeout:          totalTimeout,
 			client: &http.Client{
 				Transport: &http.Transport{
+					Proxy:                 http.ProxyFromEnvironment,
 					Dial:                  dialTimeout,
 					ResponseHeaderTimeout: time.Millisecond * time.Duration(responseHeaderTimeout),
 				},

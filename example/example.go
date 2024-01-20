@@ -39,7 +39,7 @@ func simpleGetRespJsonKey() {
 func customGetRespToJson() {
 	fmt.Println("--------customGetRespToJson-----------")
 	var j Json
-	err := xhttp.NewWithTimeout(5000, 5000, 10000).Get().AddHeader("a", "b").AddParam("c", "d").SetBody("{\"e\":\"f\"}").RespToJson("http://httpbin.org/get", &j)
+	err := xhttp.NewWithOption(5000, 5000, 10000, "").Get().AddHeader("a", "b").AddParam("c", "d").SetBody("{\"e\":\"f\"}").RespToJson("http://httpbin.org/get", &j)
 
 	if err != nil {
 		panic(err)
