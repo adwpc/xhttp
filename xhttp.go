@@ -1,6 +1,7 @@
 package xhttp
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -128,11 +129,11 @@ func (c *XHttp) SetJsonBody(b interface{}) *XHttp {
 
 // New with default options
 func New() *XHttp {
-	return NewWithOption(defaultConnTimeout, defaultRespTimeout, defaultTotalTimeout, "")
+	return NewWithOption(defaultConnTimeout, defaultRespTimeout, defaultTotalTimeout, "", true)
 }
 
 // NewWithOption
-func NewWithOption(connectTimeout, responseHeaderTimeout, totalTimeout int64, proxy string) *XHttp {
+func NewWithOption(connectTimeout, responseHeaderTimeout, totalTimeout int64, proxy string, skipTLS bool) *XHttp {
 
 	dialTimeout := func(network, addr string) (net.Conn, error) {
 		dialer := &net.Dialer{
@@ -158,6 +159,9 @@ func NewWithOption(connectTimeout, responseHeaderTimeout, totalTimeout int64, pr
 					Proxy:                 http.ProxyFromEnvironment,
 					Dial:                  dialTimeout,
 					ResponseHeaderTimeout: time.Millisecond * time.Duration(responseHeaderTimeout),
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: skipTLS,
+					},
 				},
 				Timeout: time.Millisecond * time.Duration(totalTimeout),
 			},
@@ -177,6 +181,9 @@ func NewWithOption(connectTimeout, responseHeaderTimeout, totalTimeout int64, pr
 				Proxy:                 http.ProxyURL(proxyURL),
 				Dial:                  dialTimeout,
 				ResponseHeaderTimeout: time.Millisecond * time.Duration(responseHeaderTimeout),
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: skipTLS,
+				},
 			},
 			Timeout: time.Millisecond * time.Duration(totalTimeout),
 		},
